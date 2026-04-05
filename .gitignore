@@ -1,0 +1,30 @@
+### Java ###
+.gradle/
+build/
+bin/
+out/
+!gradle-wrapper.jar
+
+### Fabric/Loom ###
+run/
+.gradle-loom-cache/
+memory_settings.json
+usercache.json
+usernamecache.json
+
+### IDEs ###
+.idea/
+*.iml
+*.iws
+*.ipr
+.vscode/
+.settings/
+.project
+.classpath
+.factorypath
+
+### System ###
+.DS_Store
+Thumbs.db
+*.log
+*.swp

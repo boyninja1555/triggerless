@@ -1,0 +1,25 @@
+{
+  "schemaVersion": 1,
+  "id": "triggerless",
+  "version": "${version}",
+  "name": "triggerless",
+  "description": "Trigger commands shortened into real ones",
+  "authors": ["boyninja1555"],
+  "contact": {},
+  "license": "MIT",
+  "icon": "assets/triggerless/icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "com.boyninja1555.triggerless.client.TriggerlessClient"
+    ],
+    "main": [
+      "com.boyninja1555.triggerless.Triggerless"
+    ]
+  },
+  "depends": {
+    "fabricloader": ">=${loader_version}",
+    "fabric-api": "*",
+    "minecraft": "${minecraft_version}"
+  }
+}
