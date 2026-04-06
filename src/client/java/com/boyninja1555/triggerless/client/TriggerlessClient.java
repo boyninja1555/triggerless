@@ -1,16 +1,18 @@
 package com.boyninja1555.triggerless.client;
 
 import com.mojang.brigadier.Command;
+import com.mojang.brigadier.arguments.StringArgumentType;
 import com.mojang.brigadier.context.CommandContext;
 import com.mojang.brigadier.suggestion.Suggestions;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
+import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
 import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
-import net.fabricmc.fabric.api.client.message.v1.ClientSendMessageEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.network.chat.Component;
+import net.minecraft.network.protocol.game.ServerboundCommandSuggestionPacket;
 
 import java.util.HashSet;
 import java.util.Set;
@@ -21,12 +23,10 @@ import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
 public class TriggerlessClient implements ClientModInitializer {
     private final Set<String> triggerObjectives = new HashSet<>();
-    private boolean loaded = false;
     private int lastLevelId = -1;
 
     @Override
     public void onInitializeClient() {
-        ClientSendMessageEvents.ALLOW_COMMAND.register(this::triggersHandle);
         ClientTickEvents.END_CLIENT_TICK.register(_ -> checkLevelChange());
 
         // Commands
@@ -55,38 +55,34 @@ public class TriggerlessClient implements ClientModInitializer {
         }
     }
 
-    private void loadTriggers() {
+    public void loadTriggers() {
         Minecraft client = Minecraft.getInstance();
         if (client.player == null || client.level == null) return;
+        var commandsDispatcher = ClientCommands.getActiveDispatcher();
+        if (commandsDispatcher == null) return;
+        var commandsRoot = commandsDispatcher.getRoot();
+        triggerObjectives.forEach(name -> commandsRoot.getChildren().removeIf(node -> node.getName().equals(name)));
         triggerObjectives.clear();
-        loaded = false;
 
         var commandDispatcher = client.player.connection.getCommands();
         var suggestionsProvider = client.player.connection.getSuggestionsProvider();
         CommandContext<ClientSuggestionProvider> context = new CommandContext<>(suggestionsProvider, "trigger ", null, null, commandDispatcher.getRoot(), null, null, null, null, false);
         CompletableFuture<Suggestions> future = suggestionsProvider.customSuggestion(context);
-        future.thenAccept(suggestions -> {
+        future.thenAccept(suggestions -> client.execute(() -> {
             suggestions.getList().forEach(s -> {
-                triggerObjectives.add(s.getText());
-                System.out.println("Registered trigger -> " + s.getText());
+                String name = s.getText();
+                triggerObjectives.add(name);
+                commandsDispatcher.register(literal(name)
+                        .executes(_ -> {
+                            client.player.connection.sendCommand("trigger " + name);
+                            return Command.SINGLE_SUCCESS;
+                        }).then(ClientCommands.argument("args", StringArgumentType.greedyString()).executes(ctx -> {
+                            String args = StringArgumentType.getString(ctx, "args");
+                            client.player.connection.sendCommand("trigger " + name + " " + args);
+                            return Command.SINGLE_SUCCESS;
+                        }))
+                );
             });
-            loaded = true;
-        });
-    }
-
-    private boolean triggersHandle(String commandLine) {
-        Minecraft client = Minecraft.getInstance();
-        if (client.player == null || client.level == null) return true;
-        if (!loaded) return true;
-
-        String[] parts = commandLine.split(" ", 2);
-        String rootCommand = parts[0];
-        if (rootCommand.equalsIgnoreCase("trigger")) return true;
-        if (triggerObjectives.contains(rootCommand)) {
-            client.player.connection.sendCommand("trigger " + commandLine);
-            return false;
-        }
-
-        return true;
+        }));
     }
 }

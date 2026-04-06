@@ -4,7 +4,9 @@
   "version": "${version}",
   "name": "triggerless",
   "description": "Trigger commands shortened into real ones",
-  "authors": ["boyninja1555"],
+  "authors": [
+    "boyninja1555"
+  ],
   "contact": {},
   "license": "MIT",
   "icon": "assets/triggerless/icon.png",
