@@ -12,7 +12,6 @@ import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
 import net.minecraft.network.chat.Component;
-import net.minecraft.network.protocol.game.ServerboundCommandSuggestionPacket;
 
 import java.util.HashSet;
 import java.util.Set;

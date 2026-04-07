@@ -2,12 +2,17 @@
   "schemaVersion": 1,
   "id": "triggerless",
   "version": "${version}",
-  "name": "triggerless",
+  "name": "Triggerless",
   "description": "Trigger commands shortened into real ones",
   "authors": [
     "boyninja1555"
   ],
-  "contact": {},
+  "contact": {
+    "email": "flappyfloorg@gmail.com",
+    "homepage": "https://modrinth.com/mod/triggerless",
+    "sources": "https://github.com/boyninja1555/triggerless",
+    "issues": "https://github.com/boyninja1555/triggerless/issues"
+  },
   "license": "MIT",
   "icon": "assets/triggerless/icon.png",
   "environment": "client",
@@ -23,5 +28,15 @@
     "fabricloader": ">=${loader_version}",
     "fabric-api": "*",
     "minecraft": "${minecraft_version}"
+  },
+  "custom": {
+    "modmenu": {
+      "links": {
+        "modmenu.discord": "https://discord.gg/yt78h3ypeX"
+      },
+      "badges": [
+        "client"
+      ]
+    }
   }
 }
