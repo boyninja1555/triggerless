@@ -2,7 +2,7 @@
     <h1>Triggerless</h1>
 </div>
 
-> **Note:** Moments after v3 was released I tested it on multiplayer. Can you guess what happens? The commands aren't red!!! If you plan to use this mod on multiplayer worlds/servers you will see partial tab completion for shorthand triggers.
+> **Note:** The generated commands will only show as valid on multiplayer. I don't know why or how but that's just how it is! Ignore the errors before pressing enter and it will work.
 
 ## Overview
 
