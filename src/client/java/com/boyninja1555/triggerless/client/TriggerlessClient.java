@@ -7,17 +7,14 @@ import com.mojang.brigadier.suggestion.Suggestions;
 import net.fabricmc.api.ClientModInitializer;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommandRegistrationCallback;
 import net.fabricmc.fabric.api.client.command.v2.ClientCommands;
-import net.fabricmc.fabric.api.client.command.v2.FabricClientCommandSource;
 import net.fabricmc.fabric.api.client.event.lifecycle.v1.ClientTickEvents;
 import net.minecraft.client.Minecraft;
 import net.minecraft.client.multiplayer.ClientSuggestionProvider;
-import net.minecraft.network.chat.Component;
 
 import java.util.HashSet;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import static com.boyninja1555.triggerless.Globals.FLOOR_COLOR;
 import static net.fabricmc.fabric.api.client.command.v2.ClientCommands.literal;
 
 public class TriggerlessClient implements ClientModInitializer {
@@ -27,22 +24,8 @@ public class TriggerlessClient implements ClientModInitializer {
     @Override
     public void onInitializeClient() {
         ClientTickEvents.END_CLIENT_TICK.register(_ -> checkLevelChange());
-
-        // Commands
-        ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> {
-            dispatcher.register(literal("reload-triggers").executes(this::reloadTriggersCommand));
-        });
+        ClientCommandRegistrationCallback.EVENT.register((dispatcher, _) -> new TriggerlessCommands(this).register(dispatcher));
     }
-
-    // Commands
-
-    private int reloadTriggersCommand(CommandContext<FabricClientCommandSource> context) {
-        loadTriggers();
-        context.getSource().getPlayer().sendSystemMessage(Component.literal("Triggers reloaded! You should be able to access any new trigger commands in shorthand form.").withColor(FLOOR_COLOR));
-        return Command.SINGLE_SUCCESS;
-    }
-
-    // Etc
 
     private void checkLevelChange() {
         Minecraft client = Minecraft.getInstance();
